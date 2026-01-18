@@ -1,7 +1,11 @@
 import React, { FC } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styles from './profile-menu.module.css';
 import { NavLink } from 'react-router-dom';
 import { ProfileMenuUIProps } from './type';
+import { AppDispatch } from '../../../services/store';
+import { logout } from '../../../services/slices/user-slice';
 
 export const ProfileMenuUI: FC<ProfileMenuUIProps> = ({
   pathname,

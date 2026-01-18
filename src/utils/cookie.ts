@@ -1,37 +1,20 @@
-export function getCookie(name: string): string | undefined {
-  const matches = document.cookie.match(
-    new RegExp(
-      '(?:^|; )' +
-        // eslint-disable-next-line no-useless-escape
-        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
-        '=([^;]*)'
-    )
-  );
-  return matches ? decodeURIComponent(matches[1]) : undefined;
-}
-
 export function setCookie(
   name: string,
   value: string,
-  props: { [key: string]: string | number | Date | boolean } = {}
+  props: Record<string, any> = {}
 ) {
-  props = {
-    path: '/',
-    ...props
-  };
-
-  let exp = props.expires;
-  if (exp && typeof exp === 'number') {
+  props = { path: '/', ...props };
+  let expires = props.expires;
+  if (typeof expires === 'number') {
     const d = new Date();
-    d.setTime(d.getTime() + exp * 1000);
-    exp = props.expires = d;
+    d.setTime(d.getTime() + expires * 1000);
+    expires = d.toUTCString();
+    props.expires = expires;
   }
 
-  if (exp && exp instanceof Date) {
-    props.expires = exp.toUTCString();
-  }
-  value = encodeURIComponent(value);
-  let updatedCookie = name + '=' + value;
+  let updatedCookie =
+    encodeURIComponent(name) + '=' + encodeURIComponent(value);
+
   for (const propName in props) {
     updatedCookie += '; ' + propName;
     const propValue = props[propName];
@@ -39,9 +22,22 @@ export function setCookie(
       updatedCookie += '=' + propValue;
     }
   }
-  document.cookie = updatedCookie;
+
+  if (typeof document !== 'undefined') {
+    document.cookie = updatedCookie;
+  }
+}
+
+export function getCookie(name: string): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const matches = document.cookie.match(
+    new RegExp(
+      '(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\/+^])/g, '\\$1') + '=([^;]*)'
+    )
+  );
+  return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
 export function deleteCookie(name: string) {
-  setCookie(name, '', { expires: -1 });
+  setCookie(name, '', { path: '/', expires: -1 });
 }

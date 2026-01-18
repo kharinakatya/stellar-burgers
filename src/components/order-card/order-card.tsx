@@ -1,5 +1,6 @@
 import { FC, memo, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import { OrderCardProps } from './type';
 import { TIngredient } from '@utils-types';
@@ -9,16 +10,28 @@ const maxIngredients = 6;
 
 export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
   const location = useLocation();
-
-  /** TODO: взять переменную из стора */
-  const ingredients: TIngredient[] = [];
+  const ingredients = useSelector(
+    (state: any) => state.ingredients?.ingredients || []
+  );
 
   const orderInfo = useMemo(() => {
-    if (!ingredients.length) return null;
+    if (!ingredients || ingredients.length === 0) {
+      console.log('No ingredients in store, order:', order._id);
+      return {
+        ...order,
+        ingredientsInfo: [],
+        ingredientsToShow: [],
+        remains: 0,
+        total: 0,
+        date: new Date(order.createdAt)
+      };
+    }
 
     const ingredientsInfo = order.ingredients.reduce(
       (acc: TIngredient[], item: string) => {
-        const ingredient = ingredients.find((ing) => ing._id === item);
+        const ingredient = ingredients.find(
+          (ing: TIngredient) => ing._id === item
+        );
         if (ingredient) return [...acc, ingredient];
         return acc;
       },
@@ -35,6 +48,7 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
         : 0;
 
     const date = new Date(order.createdAt);
+
     return {
       ...order,
       ingredientsInfo,
@@ -44,8 +58,6 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
       date
     };
   }, [order, ingredients]);
-
-  if (!orderInfo) return null;
 
   return (
     <OrderCardUI

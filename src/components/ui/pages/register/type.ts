@@ -6,4 +6,8 @@ export type RegisterUIProps = PageUIProps & {
   userName: string;
   setPassword: Dispatch<SetStateAction<string>>;
   setUserName: Dispatch<SetStateAction<string>>;
+  errorText: string;
+  email: string;
+  setEmail: (value: string) => void;
+  isButtonDisabled: boolean;
 };

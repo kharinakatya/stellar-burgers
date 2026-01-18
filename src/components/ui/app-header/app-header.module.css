@@ -1,3 +1,4 @@
+/*app-header.module.css*/
 .header {
   background-color: var(--background);
 }
@@ -15,6 +16,7 @@
 }
 
 .link {
+  /*отвечает за дизейбл*/
   display: flex;
   text-decoration: none;
   color: var(--text-inactive-color);
@@ -22,6 +24,8 @@
 
 .link_active {
   color: var(--text-primary-color);
+  text-decoration: none;
+  display: flex;
 }
 
 .link_position_last {
