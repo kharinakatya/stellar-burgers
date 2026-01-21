@@ -1,8 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from '../../services/store';
 import { TIngredient } from '../../utils/types';
-import { RootState, AppDispatch } from '../../services/store';
 import {
   fetchIngredients,
   fetchIngredientById
@@ -10,12 +9,10 @@ import {
 import { IngredientDetailsUI } from '../ui/ingredient-details/ingredient-details';
 
 const IngredientDetails: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const { id } = useParams<{ id?: string }>();
 
-  const ingredients = useSelector(
-    (state: RootState) => state.ingredients.items
-  );
+  const ingredients = useSelector((state) => state.ingredients.items);
 
   const [ingredient, setIngredient] = useState<TIngredient | null>(null);
   const [loading, setLoading] = useState(true);

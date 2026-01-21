@@ -1,63 +1,50 @@
-import { FC, useMemo, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { FC, useMemo, useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from '../../services/store';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
-import { RootState, AppDispatch } from '../../services/store';
-import { getOrderByNumberApi } from '@api';
+import {
+  fetchOrderByNumber,
+  clearCurrentOrder
+} from '../../services/slices/feeds-slice';
 import { fetchIngredients } from '../../services/slices/ingredients-slice';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
-  const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
+  const dispatch = useDispatch();
 
-  const ingredients = useSelector(
-    (state: RootState) => state.ingredients.items
-  );
-  const [orderData, setOrderData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const ingredients = useSelector((state) => state.ingredients.items);
+  const { currentOrder, loading, error } = useSelector((state) => state.feeds);
+
+  const isModal = location.state?.background;
 
   useEffect(() => {
-    const fetchOrderData = async () => {
-      if (!number) return;
-
-      try {
-        setLoading(true);
-        const orderNumber = parseInt(number);
-        const response = await getOrderByNumberApi(orderNumber);
-
-        if (response.success && response.orders.length > 0) {
-          setOrderData(response.orders[0]);
-        } else {
-          setError('Заказ не найден');
-        }
-      } catch (err) {
-        setError('Ошибка загрузки данных заказа');
-        console.error('Ошибка загрузки заказа:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (number) {
+      const orderNumber = parseInt(number);
+      dispatch(fetchOrderByNumber(orderNumber));
+    }
 
     if (!ingredients || ingredients.length === 0) {
       dispatch(fetchIngredients());
     }
 
-    fetchOrderData();
+    return () => {
+      dispatch(clearCurrentOrder());
+    };
   }, [number, dispatch, ingredients]);
 
   const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients || ingredients.length === 0) return null;
+    if (!currentOrder || !ingredients || ingredients.length === 0) return null;
 
-    const date = new Date(orderData.createdAt);
+    const date = new Date(currentOrder.createdAt);
 
     type TIngredientsWithCount = {
       [key: string]: TIngredient & { count: number };
     };
 
-    const ingredientsInfo = orderData.ingredients.reduce(
+    const ingredientsInfo = currentOrder.ingredients.reduce(
       (acc: TIngredientsWithCount, item: string) => {
         if (!acc[item]) {
           const ingredient = ingredients.find(
@@ -78,9 +65,7 @@ export const OrderInfo: FC = () => {
       {} as TIngredientsWithCount
     );
 
-    const ingredientsArray = Object.values(ingredientsInfo) as (TIngredient & {
-      count: number;
-    })[];
+    const ingredientsArray = Object.values(ingredientsInfo);
     const total = ingredientsArray.reduce(
       (acc: number, item: TIngredient & { count: number }) =>
         acc + item.price * item.count,
@@ -88,12 +73,12 @@ export const OrderInfo: FC = () => {
     );
 
     return {
-      ...orderData,
+      ...currentOrder,
       ingredientsInfo,
       date,
       total
     };
-  }, [orderData, ingredients]);
+  }, [currentOrder, ingredients]);
 
   if (loading) {
     return <Preloader />;
@@ -115,5 +100,14 @@ export const OrderInfo: FC = () => {
     );
   }
 
-  return <OrderInfoUI orderInfo={orderInfo} />;
+  return (
+    <div className={isModal ? '' : 'pt-10'}>
+      {!isModal && (
+        <div className='text text_type_digits-default text-center mb-6'>
+          #{String(currentOrder!.number).padStart(6, '0')}
+        </div>
+      )}
+      <OrderInfoUI orderInfo={orderInfo} />
+    </div>
+  );
 };

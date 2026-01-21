@@ -33,7 +33,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName, isAuth }) => {
               Конструктор
             </p>
           </div>
-          
+
           {isAuth ? (
             <Link to='/feed' className={styles.link_active}>
               <ListIcon type={'primary'} />

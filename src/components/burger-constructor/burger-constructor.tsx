@@ -1,9 +1,8 @@
 import { FC, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from '../../services/store';
 import { useNavigate } from 'react-router-dom';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
-import { RootState, AppDispatch } from '../../services/store';
 import {
   createOrder,
   clearConstructor
@@ -12,19 +11,17 @@ import { Modal } from '../modal';
 import { OrderDetailsUI } from '../ui/order-details';
 
 export const BurgerConstructor: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const bun = useSelector((state: RootState) => state.burgerConstructor.bun);
+  const bun = useSelector((state) => state.burgerConstructor.bun);
   const ingredients = useSelector(
-    (state: RootState) => state.burgerConstructor.ingredients
+    (state) => state.burgerConstructor.ingredients
   );
   const orderRequest = useSelector(
-    (state: RootState) => state.burgerConstructor.orderRequest
+    (state) => state.burgerConstructor.orderRequest
   );
-  const orderData = useSelector(
-    (state: RootState) => state.burgerConstructor.orderData
-  );
-  const user = useSelector((state: RootState) => state.user);
+  const orderData = useSelector((state) => state.burgerConstructor.orderData);
+  const user = useSelector((state) => state.user);
 
   const onOrderClick = async () => {
     if (!user.isAuth) {

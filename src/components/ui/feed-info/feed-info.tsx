@@ -1,52 +1,85 @@
-import React, { FC, memo } from 'react';
-
+import { FC } from 'react';
+import { TOrdersData } from '@utils-types';
 import styles from './feed-info.module.css';
 
-import { FeedInfoUIProps, HalfColumnProps, TColumnProps } from './type';
+export type FeedInfoUIProps = {
+  feed: TOrdersData | null;
+  readyOrders: number[];
+  pendingOrders: number[];
+};
 
-export const FeedInfoUI: FC<FeedInfoUIProps> = memo(
-  ({ feed, readyOrders, pendingOrders }) => {
-    const { total, totalToday } = feed;
+export type HalfColumnProps = {
+  orders: number[];
+  title: string;
+  textColor?: string;
+};
 
+export type TColumnProps = {
+  title: string;
+  content: number;
+};
+
+export const FeedInfoUI: FC<FeedInfoUIProps> = ({
+  feed,
+  readyOrders,
+  pendingOrders
+}) => {
+  if (!feed) {
     return (
-      <section>
-        <div className={styles.columns}>
-          <HalfColumn
-            orders={readyOrders}
-            title={'Готовы'}
-            textColor={'blue'}
-          />
-          <HalfColumn orders={pendingOrders} title={'В работе'} />
-        </div>
-        <Column title={'Выполнено за все время'} content={total} />
-        <Column title={'Выполнено за сегодня'} content={totalToday} />
-      </section>
+      <div className={styles.feedInfo}>
+        <div className='text text_type_main-default'>Загрузка данных...</div>
+      </div>
     );
   }
-);
 
-const HalfColumn: FC<HalfColumnProps> = ({ orders, title, textColor }) => (
-  <div className={`pr-6 ${styles.column}`}>
-    <h3 className={`text text_type_main-medium ${styles.title}`}>{title}:</h3>
-    <ul className={`pt-6  ${styles.list}`}>
-      {orders.map((item, index) => (
-        <li
-          className={`text text_type_digits-default ${styles.list_item}`}
-          style={{ color: textColor === 'blue' ? '#00cccc' : '#F2F2F3' }}
-          key={index}
-        >
-          {item}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+  const { total, totalToday } = feed;
 
-const Column: FC<TColumnProps> = ({ title, content }) => (
-  <>
-    <h3 className={`pt-15 text text_type_main-medium ${styles.title}`}>
-      {title}:
-    </h3>
-    <p className={`text text_type_digits-large ${styles.content}`}>{content}</p>
-  </>
-);
+  return (
+    <div className={styles.feedInfo}>
+      <div className={styles.orders}>
+        <div className={styles.ready}>
+          <h3 className={`text text_type_main-medium ${styles.title}`}>
+            Готовы:
+          </h3>
+          <ul className={styles.list}>
+            {readyOrders.map((number) => (
+              <li
+                key={number}
+                className={`text text_type_digits-default ${styles.readyItem}`}
+              >
+                {number}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className={styles.pending}>
+          <h3 className={`text text_type_main-medium ${styles.title}`}>
+            В работе:
+          </h3>
+          <ul className={styles.list}>
+            {pendingOrders.map((number) => (
+              <li
+                key={number}
+                className={`text text_type_digits-default ${styles.pendingItem}`}
+              >
+                {number}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className={styles.total}>
+        <h3 className='text text_type_main-medium'>Выполнено за все время:</h3>
+        <p className={`text text_type_digits-large ${styles.totalNumber}`}>
+          {total}
+        </p>
+      </div>
+      <div className={styles.total}>
+        <h3 className='text text_type_main-medium'>Выполнено за сегодня:</h3>
+        <p className={`text text_type_digits-large ${styles.totalNumber}`}>
+          {totalToday}
+        </p>
+      </div>
+    </div>
+  );
+};

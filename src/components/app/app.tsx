@@ -4,10 +4,9 @@ import {
   Route,
   useLocation,
   Navigate,
-  useParams
+  useNavigate
 } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../services/store';
+import { useSelector, useDispatch } from '../../services/store';
 
 import {
   ConstructorPage,
@@ -27,41 +26,57 @@ import { OrderInfo } from '../order-info';
 import { AppHeader } from '../app-header';
 
 import { fetchUser } from '../../services/slices/user-slice';
-import {
-  fetchIngredients,
-  fetchIngredientById
-} from '../../services/slices/ingredients-slice';
+import { fetchIngredients } from '../../services/slices/ingredients-slice';
+import { fetchFeeds } from '../../services/slices/feeds-slice';
 
-import { AppDispatch } from '../../services/store';
 import styles from './app.module.css';
 
 const RequireAuth: FC<{ children: JSX.Element }> = ({ children }) => {
-  const isAuth = useSelector((state: RootState) => state.user?.isAuth);
-  if (!isAuth) return <Navigate to='/login' replace />;
+  const { isAuth, isInitialized } = useSelector((state) => ({
+    isAuth: state.user?.isAuth,
+    isInitialized: state.user?.isInitialized
+  }));
+  const location = useLocation();
+
+  if (!isInitialized) {
+    return <div>Проверка авторизации...</div>;
+  }
+
+  if (!isAuth) {
+    return <Navigate to='/login' state={{ from: location }} replace />;
+  }
+
   return children;
 };
 
 const RequireNoAuth: FC<{ children: JSX.Element }> = ({ children }) => {
-  const isAuth = useSelector((state: RootState) => state.user?.isAuth);
+  const isAuth = useSelector((state) => state.user?.isAuth);
   if (isAuth) return <Navigate to='/' replace />;
   return children;
 };
 
 const App: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const state = location.state as { background?: Location } | null;
-
-  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     dispatch(fetchIngredients());
-    dispatch(fetchUser());
+    dispatch(fetchFeeds());
 
-    if (id) {
-      dispatch(fetchIngredientById(id));
+    const refreshToken = localStorage.getItem('refreshToken');
+    const accessToken = document.cookie.includes('accessToken');
+
+    if (refreshToken || accessToken) {
+      dispatch(fetchUser());
+    } else {
     }
-  }, [dispatch, id]);
+  }, [dispatch]);
+
+  const handleModalClose = () => {
+    navigate(-1);
+  };
 
   return (
     <div className={styles.app}>
@@ -138,10 +153,7 @@ const App: FC = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal
-                title='Детали ингредиента'
-                onClose={() => window.history.back()}
-              >
+              <Modal title='Детали ингредиента' onClose={handleModalClose}>
                 <IngredientDetails />
               </Modal>
             }
@@ -150,10 +162,7 @@ const App: FC = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal
-                title='Информация о заказе'
-                onClose={() => window.history.back()}
-              >
+              <Modal title='Информация о заказе' onClose={handleModalClose}>
                 <OrderInfo />
               </Modal>
             }
@@ -162,12 +171,11 @@ const App: FC = () => {
           <Route
             path='/profile/orders/:number'
             element={
-              <Modal
-                title='Информация о заказе'
-                onClose={() => window.history.back()}
-              >
-                <OrderInfo />
-              </Modal>
+              <RequireAuth>
+                <Modal title='Информация о заказе' onClose={handleModalClose}>
+                  <OrderInfo />
+                </Modal>
+              </RequireAuth>
             }
           />
         </Routes>

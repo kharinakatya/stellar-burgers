@@ -12,8 +12,7 @@ export const Feed: FC = () => {
   useEffect(() => {
     dispatch(fetchFeeds());
 
-    return () => {
-    };
+    return () => {};
   }, [dispatch]);
 
   if (loading) {

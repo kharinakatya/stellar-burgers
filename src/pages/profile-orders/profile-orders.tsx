@@ -1,18 +1,17 @@
 import { FC, useEffect, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../services/store';
+import { useSelector, useDispatch } from '../../services/store';
 import { fetchPersonalOrders } from '../../services/slices/feeds-slice';
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
 
 export const ProfileOrders: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   const { personalOrders, loading, error } = useSelector(
-    (state: RootState) => state.feeds
+    (state) => state.feeds
   );
 
-  const { isAuth, user } = useSelector((state: RootState) => state.user);
+  const { isAuth, user } = useSelector((state) => state.user);
 
   useEffect(() => {
     console.log('=== PROFILE ORDERS DEBUG ===');

@@ -1,4 +1,3 @@
-//ui/butger-ingredients/type.ts
 import { RefObject } from 'react';
 import { TIngredient, TTabMode } from '@utils-types';
 

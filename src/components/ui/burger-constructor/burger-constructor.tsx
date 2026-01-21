@@ -10,8 +10,7 @@ import { BurgerConstructorUIProps } from './type';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorElement, Modal } from '@components';
 import { Preloader, OrderDetailsUI } from '@ui';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../services/store';
+import { useSelector } from '../../../services/store';
 
 export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   constructorItems,
@@ -23,7 +22,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
 }) => {
   const { bun, ingredients } = constructorItems;
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user);
+  const user = useSelector((state) => state.user);
   const isAuthenticated = user.isAuth;
 
   const handleOrderClick = () => {

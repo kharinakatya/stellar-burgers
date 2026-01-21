@@ -47,8 +47,7 @@ export const fetchIngredientById = createAsyncThunk<
 const slice = createSlice({
   name: 'ingredients',
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchIngredients.pending, (s) => {

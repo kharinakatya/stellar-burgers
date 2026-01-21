@@ -14,13 +14,15 @@ type UserState = {
   isAuth: boolean;
   loading: boolean;
   error?: string | null;
+  isInitialized: boolean;
 };
 
 const initialState: UserState = {
   user: null,
   isAuth: false,
   loading: false,
-  error: null
+  error: null,
+  isInitialized: false
 };
 
 type LoginData = { email: string; password: string };
@@ -46,17 +48,30 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-export const fetchUser = createAsyncThunk('user/fetch', async () => {
-  const res = await getUserApi();
-  if (res && (res as any).user) return (res as any).user as TUser;
-  throw new Error('Не удалось получить пользователя');
+export const fetchUser = createAsyncThunk('user/fetch', async (_, thunkAPI) => {
+  try {
+    const res = await getUserApi();
+    if (res && res.user) {
+      return res.user as TUser;
+    }
+    throw new Error('Не удалось получить пользователя');
+  } catch (error) {
+    if (
+      (error as any).status === 401 ||
+      (error as any).message?.includes('token')
+    ) {
+      localStorage.removeItem('refreshToken');
+      deleteCookie('accessToken');
+    }
+    return thunkAPI.rejectWithValue(error);
+  }
 });
 
 export const updateUser = createAsyncThunk(
   'user/update',
   async (data: Partial<RegisterData>) => {
     const res = await updateUserApi(data);
-    if (res && (res as any).user) return (res as any).user as TUser;
+    if (res && res.user) return res.user as TUser;
     throw new Error('Не удалось обновить пользователя');
   }
 );
@@ -87,6 +102,10 @@ const slice = createSlice({
       state.isAuth = false;
       state.loading = false;
       state.error = null;
+      state.isInitialized = true;
+    },
+    resetInitialization: (state) => {
+      state.isInitialized = false;
     }
   },
   extraReducers: (builder) => {
@@ -98,10 +117,12 @@ const slice = createSlice({
       s.loading = false;
       s.user = action.payload;
       s.isAuth = true;
+      s.isInitialized = true;
     });
     builder.addCase(loginUser.rejected, (s, action) => {
       s.loading = false;
       s.error = action.error.message || 'Ошибка логина';
+      s.isInitialized = true;
     });
 
     builder.addCase(registerUser.pending, (s) => {
@@ -112,25 +133,31 @@ const slice = createSlice({
       s.loading = false;
       s.user = action.payload;
       s.isAuth = true;
+      s.isInitialized = true;
     });
     builder.addCase(registerUser.rejected, (s, action) => {
       s.loading = false;
       s.error = action.error.message || 'Ошибка регистрации';
+      s.isInitialized = true;
     });
 
     builder.addCase(fetchUser.pending, (s) => {
       s.loading = true;
       s.error = null;
+      s.isInitialized = false;
     });
     builder.addCase(fetchUser.fulfilled, (s, action) => {
       s.loading = false;
       s.user = action.payload;
       s.isAuth = true;
+      s.isInitialized = true;
     });
     builder.addCase(fetchUser.rejected, (s, action) => {
       s.loading = false;
+      s.user = null;
       s.isAuth = false;
       s.error = action.error.message || 'Ошибка получения пользователя';
+      s.isInitialized = true;
     });
 
     builder.addCase(updateUser.pending, (s) => {
@@ -151,6 +178,7 @@ const slice = createSlice({
       s.isAuth = false;
       s.loading = false;
       s.error = null;
+      s.isInitialized = true;
     });
 
     builder.addCase(logout.rejected, (s) => {
@@ -158,9 +186,10 @@ const slice = createSlice({
       s.isAuth = false;
       s.loading = false;
       s.error = null;
+      s.isInitialized = true;
     });
   }
 });
 
-export const { forceLogout } = slice.actions;
+export const { forceLogout, resetInitialization } = slice.actions;
 export default slice.reducer;

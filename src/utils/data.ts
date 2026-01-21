@@ -1,8 +1,3 @@
-// src/utils/date.ts
-
-/**
- * Форматирует дату в виде "Сегодня", "Вчера", "2 дня назад" и т.д.
- */
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
@@ -16,16 +11,13 @@ export const formatDate = (dateString: string): string => {
     date.getDate()
   );
 
-  // Разница в днях
   const diffTime = today.getTime() - orderDate.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  // Форматируем время
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
   const time = `${hours}:${minutes}`;
 
-  // Определяем текст дня
   let dayText = '';
   if (diffDays === 0) {
     dayText = 'Сегодня';
@@ -36,7 +28,6 @@ export const formatDate = (dateString: string): string => {
   } else if (diffDays > 5) {
     dayText = `${diffDays} дней назад`;
   } else {
-    // Если заказ в будущем (маловероятно, но на всякий случай)
     dayText = date.toLocaleDateString('ru-RU', {
       day: 'numeric',
       month: 'long'
@@ -46,9 +37,6 @@ export const formatDate = (dateString: string): string => {
   return `${dayText}, ${time} i-GMT+${date.getTimezoneOffset() / -60}`;
 };
 
-/**
- * Форматирует дату для отображения в заказе
- */
 export const formatOrderDate = (dateString: string): string => {
   const date = new Date(dateString);
   return date.toLocaleDateString('ru-RU', {

@@ -1,6 +1,6 @@
 import { FC, memo, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../../services/store';
 
 import { OrderCardProps } from './type';
 import { TIngredient } from '@utils-types';
@@ -10,9 +10,7 @@ const maxIngredients = 6;
 
 export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
   const location = useLocation();
-  const ingredients = useSelector(
-    (state: any) => state.ingredients?.ingredients || []
-  );
+  const ingredients = useSelector((state) => state.ingredients?.items || []);
 
   const orderInfo = useMemo(() => {
     if (!ingredients || ingredients.length === 0) {

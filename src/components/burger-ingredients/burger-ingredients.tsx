@@ -1,15 +1,12 @@
 import React, { useState, useRef, useEffect, FC } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../../services/store';
 import { TTabMode, TIngredient } from '@utils-types';
 import { BurgerIngredientsUI } from '../ui/burger-ingredients';
-import { RootState } from '../../services/store';
 
 export const BurgerIngredients: FC = () => {
   const ingredients =
-    (useSelector(
-      (state: RootState) => state.ingredients.items
-    ) as TIngredient[]) ?? [];
+    (useSelector((state) => state.ingredients.items) as TIngredient[]) ?? [];
 
   const buns: TIngredient[] = ingredients.filter((i) => i.type === 'bun');
   const mains: TIngredient[] = ingredients.filter((i) => i.type === 'main');

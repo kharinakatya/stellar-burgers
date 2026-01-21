@@ -94,8 +94,7 @@ export const OrderCardUI: FC<OrderCardUIProps> = memo(
                   </li>
                 );
               })
-            ) :
-            orderInfo.ingredients && orderInfo.ingredients.length > 0 ? (
+            ) : orderInfo.ingredients && orderInfo.ingredients.length > 0 ? (
               orderInfo.ingredients
                 .slice(0, maxIngredients)
                 .map((ingredientId, index) => {

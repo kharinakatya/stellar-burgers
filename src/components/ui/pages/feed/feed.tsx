@@ -1,5 +1,5 @@
 import { FC, memo } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../../../../services/store';
 import { useLocation } from 'react-router-dom';
 
 import styles from './feed.module.css';
@@ -10,7 +10,7 @@ import { RefreshButton } from '@zlden/react-developer-burger-ui-components';
 
 export const FeedUI: FC<FeedUIProps> = memo(({ orders, handleGetFeeds }) => {
   const location = useLocation();
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useSelector((state) => state.user);
 
   const isProfileOrders = location.pathname.includes('/profile/orders');
   const isFeed = location.pathname === '/feed';

@@ -7,11 +7,9 @@ import { removeIngredient } from '../../services/slices/constructor-slice';
 export const BurgerConstructorElement: FC<BurgerConstructorElementProps> = memo(
   ({ ingredient, index, totalItems }) => {
     const dispatch = useDispatch();
-    const handleMoveDown = () => {
-    };
+    const handleMoveDown = () => {};
 
-    const handleMoveUp = () => {
-    };
+    const handleMoveUp = () => {};
 
     const handleClose = () => {
       dispatch(removeIngredient(ingredient.id));
