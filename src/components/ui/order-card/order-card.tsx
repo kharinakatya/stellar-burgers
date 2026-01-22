@@ -17,15 +17,21 @@ export const OrderCardUI: FC<OrderCardUIProps> = memo(
     const getUniqueIngredients = () => {
       if (
         !orderInfo.ingredientsInfo ||
-        Object.keys(orderInfo.ingredientsInfo).length === 0
+        orderInfo.ingredientsInfo.length === 0
       ) {
         return [];
       }
 
-      return Object.values(orderInfo.ingredientsInfo).map((item) => ({
-        ...item,
-        image: item.image_mobile || item.image || ''
-      }));
+      const uniqueIngredientsMap = new Map();
+      orderInfo.ingredientsInfo.forEach((item: any) => {
+        if (!uniqueIngredientsMap.has(item._id)) {
+          uniqueIngredientsMap.set(item._id, {
+            ...item,
+            image: item.image_mobile || item.image || ''
+          });
+        }
+      });
+      return Array.from(uniqueIngredientsMap.values());
     };
 
     const uniqueIngredients = getUniqueIngredients();
@@ -72,7 +78,7 @@ export const OrderCardUI: FC<OrderCardUIProps> = memo(
                       right: right,
                       position: 'relative'
                     }}
-                    key={`${ingredient._id}`}
+                    key={`${ingredient._id}-${index}`}
                   >
                     <div className={styles.image_container}>
                       <img
