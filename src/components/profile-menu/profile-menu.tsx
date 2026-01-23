@@ -1,12 +1,11 @@
 import { FC } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from '../../services/store';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ProfileMenuUI } from '../ui/profile-menu/profile-menu';
-import { AppDispatch } from '../../services/store';
 import { logout } from '../../services/slices/user-slice';
 
 export const ProfileMenu: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
