@@ -14,9 +14,9 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName, isAuth }) => {
   const isConstructorActive = location.pathname === '/';
 
   return (
-    <header className={styles.header}>
-      <nav className={`${styles.menu} p-4`}>
-        <div className={styles.menu_part_left}>
+    <header className={styles.header} data-testid='app-header'>
+      <nav className={`${styles.menu} p-4`} data-testid='main-navigation'>
+        <div className={styles.menu_part_left} data-testid='left-navigation'>
           <div
             className={`${styles.link} ${styles.link_active}`}
             style={{ cursor: 'pointer' }}
@@ -27,6 +27,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName, isAuth }) => {
                 window.location.reload();
               }
             }}
+            data-testid='constructor-link'
           >
             <BurgerIcon type={'primary'} />
             <p className='text text_type_main-default ml-2 mr-10'>
@@ -35,7 +36,11 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName, isAuth }) => {
           </div>
 
           {isAuth ? (
-            <Link to='/feed' className={styles.link_active}>
+            <Link
+              to='/feed'
+              className={styles.link_active}
+              data-testid='feed-link'
+            >
               <ListIcon type={'primary'} />
               <p className='text text_type_main-default ml-2'>Лента заказов</p>
             </Link>
@@ -46,12 +51,19 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName, isAuth }) => {
             </div>
           )}
         </div>
-        <div className={styles.logo}>
+        <div className={styles.logo} data-testid='app-logo'>
           <Logo className='' />
         </div>
-        <div className={styles.link_position_last}>
+        <div
+          className={styles.link_position_last}
+          data-testid='profile-navigation'
+        >
           {isAuth ? (
-            <Link to='/profile' className={styles.link_active}>
+            <Link
+              to='/profile'
+              className={styles.link_active}
+              data-testid='profile-link'
+            >
               <ProfileIcon type={'primary'} />
               <p className='text text_type_main-default ml-2'>Личный кабинет</p>
             </Link>

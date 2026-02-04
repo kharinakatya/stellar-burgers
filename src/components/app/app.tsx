@@ -135,7 +135,7 @@ const App: FC = () => {
           }
         />
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        <Route path='/feed/:number' element={<OrderInfo />} />
+        <Route path='/feed/:number' element={<div />} />
         <Route
           path='/profile/orders/:number'
           element={

@@ -1,3 +1,4 @@
+// C:\Users\Ekaterina.Kharina\dev\stellar-burgers\src\components\ui\burger-constructor-element\burger-constructor-element.tsx
 import React, { FC, memo } from 'react';
 import styles from './burger-constructor-element.module.css';
 import { ConstructorElement } from '@zlden/react-developer-burger-ui-components';
@@ -14,19 +15,26 @@ export const BurgerConstructorElementUI: FC<BurgerConstructorElementUIProps> =
       handleMoveDown,
       handleClose
     }) => (
-      <li className={`${styles.element} mb-4 mr-2`}>
+      <li
+        className={`${styles.element} mb-4 mr-2`}
+        data-testid={`constructor-ingredient-${index}`}
+      >
         <MoveButton
           handleMoveDown={handleMoveDown}
           handleMoveUp={handleMoveUp}
           isUpDisabled={index === 0}
           isDownDisabled={index === totalItems - 1}
         />
-        <div className={`${styles.element_fullwidth} ml-2`}>
+        <div
+          className={`${styles.element_fullwidth} ml-2`}
+          data-testid='constructor-element' // ✅ ДОБАВЛЕНО
+        >
           <ConstructorElement
             text={ingredient.name}
             price={ingredient.price}
             thumbnail={ingredient.image}
             handleClose={handleClose}
+            data-testid={`constructor-element-${index}`} // ✅ ДОБАВЛЕНО
           />
         </div>
       </li>

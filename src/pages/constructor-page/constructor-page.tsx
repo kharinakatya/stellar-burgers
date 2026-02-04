@@ -26,7 +26,7 @@ export const ConstructorPage: FC = () => {
       {isIngredientsLoading ? (
         <Preloader />
       ) : (
-        <main className={styles.containerMain}>
+        <main className={styles.containerMain} data-testid='constructor-page'>
           <h1
             className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}
           >

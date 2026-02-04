@@ -13,14 +13,15 @@ export const ConstructorPageUI: FC<ConstructorPageUIProps> = ({
     {isIngredientsLoading ? (
       <Preloader />
     ) : (
-      <main className={styles.containerMain}>
+      <main className={styles.containerMain} data-testid='constructor-page'>
         <h1
           className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}
+          data-testid='page-title'
         >
           Соберите бургер
         </h1>
-        <div className={`${styles.main} pl-5 pr-5`}>
-          <BurgerIngredients />
+        <div className={`${styles.main} pl-5 pr-5`} data-testid='main-content'>
+          <BurgerIngredients data-testid='burger-ingredients-section' />
           <BurgerConstructor />
         </div>
       </main>
