@@ -25,7 +25,10 @@
       "@utils-types": ["src/utils/types"],
       "@api": ["src/utils/burger-api.ts"],
       "@slices": ["src/services/slices"],
-      "@selectors": ["src/services/selectors"]
+      "@selectors": ["src/services/selectors"],
+      "@api/*": ["services/api/*"],
+      "@utils-types/*": ["utils/types/*"],
+      "@components/*": ["components/*"]
     }
   },
   "include": ["src"]

@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './burger-ingredient.module.css';
 
 import {
@@ -11,29 +11,45 @@ import {
 import { TBurgerIngredientUIProps } from './type';
 
 export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
-  ({ ingredient, count, handleAdd, locationState }) => {
+  ({ ingredient, count, handleAdd }) => {
     const { image, price, name, _id } = ingredient;
+    const location = useLocation();
 
     return (
-      <li className={styles.container}>
+      <li className={styles.container} data-testid='ingredient-card'>
         <Link
           className={styles.article}
           to={`/ingredients/${_id}`}
-          state={locationState}
+          state={{ background: location }}
+          data-testid='ingredient-link'
         >
-          {count && <Counter count={count} />}
-          <img className={styles.img} src={image} alt='картинка ингредиента.' />
-          <div className={`${styles.cost} mt-2 mb-2`}>
+          {count && <Counter count={count} data-testid='ingredient-counter' />}
+          <img
+            className={styles.img}
+            src={image}
+            alt='картинка ингредиента.'
+            data-testid='ingredient-image'
+          />
+          <div
+            className={`${styles.cost} mt-2 mb-2`}
+            data-testid='ingredient-price'
+          >
             <p className='text text_type_digits-default mr-2'>{price}</p>
             <CurrencyIcon type='primary' />
           </div>
-          <p className={`text text_type_main-default ${styles.text}`}>{name}</p>
+          <p
+            className={`text text_type_main-default ${styles.text}`}
+            data-testid='ingredient-name'
+          >
+            {name}
+          </p>
         </Link>
-        <AddButton
-          text='Добавить'
-          onClick={handleAdd}
-          extraClass={`${styles.addButton} mt-8`}
-        />
+        <div
+          className={styles.addButtonContainer}
+          data-testid='ingredient-add-button'
+        >
+          <AddButton onClick={handleAdd} />
+        </div>
       </li>
     );
   }

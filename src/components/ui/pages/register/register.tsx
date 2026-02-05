@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, SyntheticEvent, useState } from 'react';
 import {
   Input,
   Button,
@@ -6,17 +6,31 @@ import {
 } from '@zlden/react-developer-burger-ui-components';
 import styles from '../common.module.css';
 import { Link } from 'react-router-dom';
-import { RegisterUIProps } from './type';
 
-export const RegisterUI: FC<RegisterUIProps> = ({
+interface RegisterUIProps {
+  errorText: string;
+  email: string;
+  userName: string;
+  password: string;
+  setEmail: (value: string) => void;
+  setPassword: (value: string) => void;
+  setUserName: (value: string) => void;
+  handleSubmit: (e: SyntheticEvent) => void;
+  isButtonDisabled: boolean;
+}
+
+export const RegisterUI: FC<
+  RegisterUIProps & { isButtonDisabled: boolean }
+> = ({
   errorText,
   email,
-  setEmail,
-  handleSubmit,
-  password,
-  setPassword,
   userName,
-  setUserName
+  password,
+  setEmail,
+  setPassword,
+  setUserName,
+  handleSubmit,
+  isButtonDisabled
 }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
@@ -59,7 +73,12 @@ export const RegisterUI: FC<RegisterUIProps> = ({
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
-            <Button type='primary' size='medium' htmlType='submit'>
+            <Button
+              type='primary'
+              size='medium'
+              htmlType='submit'
+              disabled={isButtonDisabled}
+            >
               Зарегистрироваться
             </Button>
           </div>
