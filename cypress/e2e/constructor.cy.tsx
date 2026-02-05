@@ -1,29 +1,30 @@
 describe('Constructor: Load ingredients', () => {
   beforeEach(() => {
-    cy.clearLocalStorage()
+  cy.clearLocalStorage()
+  cy.clearCookies()
 
-    cy.intercept('GET', '**/api/auth/user', {
-      statusCode: 200,
-      body: {
-        success: true,
-        user: {
-          email: 'test@example.com',
-          name: 'Test User'
-        }
+  cy.intercept('GET', '**/api/auth/user', {
+    statusCode: 200,
+    body: {
+      success: true,
+      user: {
+        email: 'test@example.com',
+        name: 'Test User'
       }
-    }).as('getUser')
+    }
+  }).as('getUser')
 
-    cy.intercept('GET', '**/api/ingredients', {
-      fixture: 'ingredients.json'
-    }).as('getIngredients')
+  cy.intercept('GET', '**/api/ingredients', {
+    fixture: 'ingredients.json'
+  }).as('getIngredients')
 
-    cy.visit('/', {
-      onBeforeLoad: (win) => {
-        win.localStorage.setItem('accessToken', 'mock-access-token')
-        win.localStorage.setItem('refreshToken', 'mock-refresh-token')
-      }
-    })
+  cy.visit('/', {
+    onBeforeLoad: (win) => {
+      win.localStorage.setItem('accessToken', 'mock-access-token')
+      win.localStorage.setItem('refreshToken', 'mock-refresh-token')
+    }
   })
+})
 
   it('проверяем вывод всех ингредиентов на страницу', () => {
     cy.wait('@getUser')
@@ -170,8 +171,7 @@ describe('Constructor: Load ingredients', () => {
     cy.get('[data-testid^="constructor-ingredient-"]').should('not.exist')
   })
 
- it('оформление заказа: проверка авторизации и модального окна', () => {
-
+it('оформление заказа: проверка авторизации и модального окна', () => {
   cy.clearLocalStorage()
   cy.visit('/')
   cy.get('[data-testid="ingredient-card"]').first().find('[data-testid="ingredient-add-button"]').click()
@@ -216,22 +216,31 @@ describe('Constructor: Load ingredients', () => {
     .should('have.length.at.least', 1)
     .should('be.visible')
 
-cy.get('[data-testid="order-id-label"]')
-  .should('have.length.at.least', 1)
-  .each(($el) => {
-    const text = $el.text().trim()
-    expect(text).to.equal('идентификатор заказа')
+  cy.get('[data-testid="order-id-label"]')
+    .should('have.length.at.least', 1)
+    .each(($el) => {
+      const text = $el.text().trim()
+      expect(text).to.equal('идентификатор заказа')
+    })
+
+    cy.get('[data-testid="modal-close-button"]')
+    .should('have.length', 2)
+    .then(($buttons) => {
+      const secondButton = $buttons[1];
+      cy.wrap(secondButton).click({ force: false });
+    });
+
+  cy.get('[data-testid="no-bun-top"]').should('exist');
+  cy.get('[data-testid="no-bun-bottom"]').should('exist');
+  cy.get('[data-testid="no-filling"]').should('exist');
+
+  cy.get('[data-testid="bun-top"]').should('not.exist');
+  cy.get('[data-testid="bun-bottom"]').should('not.exist');
+  cy.get('[data-testid^="constructor-ingredient-"]').should('not.exist');
+
+  cy.get('[data-testid^="no-bun"]:not([data-testid="no-bun-top"]):not([data-testid="no-bun-bottom"])').should('not.exist');
+  cy.get('[data-testid="no-filling"]:not([data-testid="no-filling"])').should('not.exist');
+
+  cy.url().should('eq', Cypress.config().baseUrl + '/');
   })
-
-cy.get('[data-testid="modal-close-button"]')
-  .should('have.length', 2)
-  .then(($buttons) => {
-    const secondButton = $buttons[1]
-    cy.wrap(secondButton).click({ force: false })
-  })
-
-cy.get('[data-testid="modal"]').should('not.exist')
-cy.url().should('eq', Cypress.config().baseUrl + '/')
- })
-
 })

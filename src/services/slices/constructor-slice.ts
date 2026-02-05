@@ -53,6 +53,7 @@ const slice = createSlice({
     clearConstructor: (state) => {
       state.bun = null;
       state.ingredients = [];
+      state.orderRequest = false;
       state.orderData = null;
       state.error = null;
     }
